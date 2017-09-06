@@ -6,7 +6,7 @@ By Keras.
 ## MNIST
 
 論文や実装 (https://github.com/haeusser/learning_by_association/blob/master/semisup/mnist_train_eval.py) では数分で99%を達成するとあるが、全然達成できなかった.
-`assoc.py` では 20 epochs 程度回してようやく 91% 程度に到達しました.
+`assoc.py` では 22 epochs 回してようやく 96.6% 程度に到達しました.
 
 ## References
 

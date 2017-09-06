@@ -43,7 +43,7 @@ def train(name, resume):
 
     # dataset
     echo('dataset loading...')
-    batch_size = 50
+    batch_size = 100
     gen_train, gen_test = dataset.batch_generator(batch_size=batch_size)
 
     # model building
@@ -73,21 +73,6 @@ def train(name, resume):
         epochs=50,
         validation_data=gen_test,
         validation_steps=(1000 // batch_size))
-
-
-@main.command()
-@click.argument('snapshot')
-def test(snapshot):
-
-    # init
-    echo('test', (snapshot,))
-    session = tf.Session('')
-    K.set_session(session)
-    K.set_learning_phase(0)
-
-    # model loading
-    model = lib.model.build()
-    model.load_weights(snapshot)
 
 
 if __name__ == '__main__':
