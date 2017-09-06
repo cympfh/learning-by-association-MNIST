@@ -1,12 +1,23 @@
 # Learning by association; Semi-supervised MNIST learning
 
 This is an implementation of "Learning by Assocication" written with Keras.
-`assoc.py` learns MNIST, 100 (10x10) labeled and unlabeled data.
+`assoc.py` execs semi-supervised learning of MNIST.
 
-## MNIST
+## usage
 
-論文や実装 (https://github.com/haeusser/learning_by_association/blob/master/semisup/mnist_train_eval.py) では数分で99%を達成するとあるが、全然達成できなかった.
-`assoc.py` では 22 epochs 回してようやく 96.6% 程度に到達しました.
+Type `make help`.
+
+## Result
+
+| #labels | Acc.(%) |
+|:--------|:-------:|
+| 100     | 96.00   |
+| 10      | 90.30   |
+
+![](logs/result.png)
+
+The paper reported accuracy 99%+ can be performed with 100 labels (https://github.com/haeusser/learning_by_association/blob/master/semisup/mnist_train_eval.py).
+This project of mine couldn't achieved the accuracy...
 
 ## References
 

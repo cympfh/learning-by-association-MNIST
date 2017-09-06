@@ -1,10 +1,14 @@
-## training
-train:
-	CUDA_VISIBLE_DEVICES=$(shell empty-gpu-device) python assoc.py train --name $(shell date "+%Y-%m-%d-%s")
+## MNIST semisup training with 100 labels
+semisup:
+	CUDA_VISIBLE_DEVICES=$(shell empty-gpu-device) python assoc.py train --name $(shell date "+%Y-%m-%d-%s") --labels 100
+
+## MNIST one-shot training (i.e. with 10 labels)
+one-shot:
+	CUDA_VISIBLE_DEVICES=$(shell empty-gpu-device) python assoc.py train --name $(shell date "+%Y-%m-%d-%s") --labels 10 --aug
 
 ## visplot a log
 log:
-		visplot --smoothing 2 -x epoch -y acc,val_acc $(shell ls -1 logs/*.json)
+		visplot --smoothing 2 -x epoch -y *_acc $(shell ls -1 logs/*.json | peco)
 
 .DEFAULT_GOAL := help
 

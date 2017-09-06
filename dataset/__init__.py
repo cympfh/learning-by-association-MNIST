@@ -8,7 +8,7 @@ def get_range(xs, rng):
     return [xs[i % n] for i in rng]
 
 
-def generator_generator(batch_size, X, Y, I, l_indices, u_indices):
+def generator_generator(batch_size, X, Y, I, l_indices, u_indices, aug=False):
 
     # DUMMY = numpy.zeros((batch_size,))
     V = numpy.ones((batch_size, 1)) / batch_size
@@ -24,6 +24,11 @@ def generator_generator(batch_size, X, Y, I, l_indices, u_indices):
         i_l = get_range(I, batch_l_indices)
         # i_u = get_range(i_train, batch_u_indices)
 
+        if aug:
+            div = 0.2
+            x_l += numpy.random.randn(*x_l.shape) * div
+            x_u += numpy.random.randn(*x_u.shape) * div
+
         klass_count = [0.001] * 10
         for i in range(10):
             klass = int(i_l[i])
@@ -37,7 +42,7 @@ def generator_generator(batch_size, X, Y, I, l_indices, u_indices):
         yield [x_l, x_u], [T, V, y_l]
 
 
-def batch_generator(labeled=100, batch_size=50):
+def batch_generator(labels=100, batch_size=50, aug=False):
 
     (x_train, i_train), (x_test, i_test) = mnist.load_data()
     x_train = x_train.astype('f') / 255.0
@@ -52,7 +57,7 @@ def batch_generator(labeled=100, batch_size=50):
 
     for i in range(len(x_train)):
         klass = int(i_train[i])
-        if l_count[klass] >= labeled // 10:
+        if l_count[klass] >= labels // 10:
             u_indices.append(i)
         else:
             l_indices.append(i)
@@ -60,7 +65,7 @@ def batch_generator(labeled=100, batch_size=50):
 
     print("{} items are labeled".format(len(l_indices)))
     print("rest {} item are unlabeled".format(len(u_indices)))
-    gen_train = generator_generator(batch_size, x_train, y_train, i_train, l_indices, u_indices)
+    gen_train = generator_generator(batch_size, x_train, y_train, i_train, l_indices, u_indices, aug=aug)
 
     # dummy labeling for test dataset
     m = len(i_test)

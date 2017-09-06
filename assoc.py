@@ -20,8 +20,10 @@ def main():
 
 @main.command()
 @click.option('--name', help='model name')
+@click.option('--labels', type=int, default=100, help='num of labeled items (be multiple of 10)')
+@click.option('--aug', is_flag=True, default=False, help='data augmentation every epoch')
 @click.option('--resume', help='when resume learning from the snapshot')
-def train(name, resume):
+def train(name, labels, aug, resume):
 
     numpy.set_printoptions(
         precision=2,
@@ -33,7 +35,7 @@ def train(name, resume):
     echo('log path', log_path)
     echo('out path', out_path)
 
-    lib.log.info(log_path, {'_commandline': {'name': name, 'resume': resume}})
+    lib.log.info(log_path, {'_commandline': {'name': name, 'labels': labels, 'aug': aug, 'resume': resume}})
 
     # init
     echo('train', (name, resume))
@@ -44,7 +46,7 @@ def train(name, resume):
     # dataset
     echo('dataset loading...')
     batch_size = 100
-    gen_train, gen_test = dataset.batch_generator(batch_size=batch_size)
+    gen_train, gen_test = dataset.batch_generator(labels=labels, batch_size=batch_size, aug=aug)
 
     # model building
     echo('model building...')
@@ -63,16 +65,17 @@ def train(name, resume):
 
     # training
     echo('start learning...')
-    # callbacks = [
-    #     lib.log.JsonLog(log_path),
-    #     keras.callbacks.ModelCheckpoint(out_path, monitor='val_loss', save_weights_only=True)
-    # ]
+    callbacks = [
+        lib.log.JsonLog(log_path),
+        # keras.callbacks.ModelCheckpoint(out_path, monitor='val_loss', save_weights_only=True)
+    ]
     model.fit_generator(
         gen_train,
-        steps_per_epoch=(59900 // batch_size),
         epochs=50,
+        steps_per_epoch=(59900 // batch_size),
         validation_data=gen_test,
-        validation_steps=(1000 // batch_size))
+        validation_steps=(1000 // batch_size),
+        callbacks=callbacks)
 
 
 if __name__ == '__main__':
