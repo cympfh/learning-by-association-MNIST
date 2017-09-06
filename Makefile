@@ -1,14 +1,6 @@
-## training mode (newly)
-train-new:
-	CUDA_VISIBLE_DEVICES=$(shell empty-gpu-device) python assoc.py train --name $(shell date "+%Y-%m-%d-%s")
-
-## training mode (resume from a snapshot)
+## training
 train:
-	CUDA_VISIBLE_DEVICES=$(shell empty-gpu-device) python assoc.py train --name $(shell date "+%Y-%m-%d-%s") --resume $(shell ls -1 snapshots/*.h5|peco)
-
-## testing mode
-test:
-	CUDA_VISIBLE_DEVICES=$(shell empty-gpu-device) python assoc.py test $(shell ls -1 snapshots/*.h5|peco)
+	CUDA_VISIBLE_DEVICES=$(shell empty-gpu-device) python assoc.py train --name $(shell date "+%Y-%m-%d-%s")
 
 ## visplot a log
 log:
