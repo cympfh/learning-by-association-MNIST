@@ -1,7 +1,7 @@
-# Learning by association
+# Learning by association; Semi-supervised MNIST learning
 
-This is an implementation of "Learning by Assocication",
-By Keras.
+This is an implementation of "Learning by Assocication" written with Keras.
+`assoc.py` learns MNIST, 100 (10x10) labeled and unlabeled data.
 
 ## MNIST
 
