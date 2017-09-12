@@ -42,7 +42,7 @@ def generator_generator(batch_size, X, Y, I, l_indices, u_indices, aug=False):
         yield [x_l, x_u], [T, V, y_l]
 
 
-def batch_generator(labels=100, batch_size=50, aug=False):
+def batch_generator(labels, unlabels, batch_size=50, aug=False):
 
     (x_train, i_train), (x_test, i_test) = mnist.load_data()
     x_train = x_train.astype('f') / 255.0
@@ -50,19 +50,34 @@ def batch_generator(labels=100, batch_size=50, aug=False):
     y_train = np_utils.to_categorical(i_train, 10)
     y_test = np_utils.to_categorical(i_test, 10)
 
+    def p(a: str) -> [int]:
+        if a is None:
+            return [1e20] * 10
+        if ',' in a:
+            return list(map(int, a.split(',')))
+        n = int(a)
+        m = n // 10
+        return [m] * 10
+
     # train labeling
     l_indices = []
-    l_count = [0] * 10
     u_indices = []
+    l_count = [0] * 10
+    u_count = [0] * 10
+    l_sup = p(labels)
+    u_sup = p(unlabels)
 
     for i in range(len(x_train)):
         klass = int(i_train[i])
-        if l_count[klass] >= labels // 10:
-            u_indices.append(i)
-        else:
+        if l_count[klass] < l_sup[klass]:
             l_indices.append(i)
             l_count[klass] += 1
+        elif u_count[klass] < u_sup[klass]:
+            u_indices.append(i)
+            u_count[klass] += 1
 
+    assert len(l_indices) > 0, 'No items are labeeld. see --labels'
+    assert len(u_indices) > 0, 'No items are unlabeled. see --unlabels'
     print("{} items are labeled".format(len(l_indices)))
     print("rest {} item are unlabeled".format(len(u_indices)))
     gen_train = generator_generator(batch_size, x_train, y_train, i_train, l_indices, u_indices, aug=aug)

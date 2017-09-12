@@ -20,10 +20,11 @@ def main():
 
 @main.command()
 @click.option('--name', help='model name')
-@click.option('--labels', type=int, default=100, help='num of labeled items (be multiple of 10)')
+@click.option('--labels', default="100")
+@click.option('--unlabels', default=None)
 @click.option('--aug', is_flag=True, default=False, help='data augmentation every epoch')
 @click.option('--resume', help='when resume learning from the snapshot')
-def train(name, labels, aug, resume):
+def train(name, labels, unlabels, aug, resume):
 
     numpy.set_printoptions(
         precision=2,
@@ -35,7 +36,8 @@ def train(name, labels, aug, resume):
     echo('log path', log_path)
     echo('out path', out_path)
 
-    lib.log.info(log_path, {'_commandline': {'name': name, 'labels': labels, 'aug': aug, 'resume': resume}})
+    lib.log.info(log_path, {'_commandline': {
+        'name': name, 'labels': labels, 'unlabels': unlabels, 'aug': aug, 'resume': resume}})
 
     # init
     echo('train', (name, resume))
@@ -46,7 +48,7 @@ def train(name, labels, aug, resume):
     # dataset
     echo('dataset loading...')
     batch_size = 100
-    gen_train, gen_test = dataset.batch_generator(labels=labels, batch_size=batch_size, aug=aug)
+    gen_train, gen_test = dataset.batch_generator(labels, unlabels, batch_size=batch_size, aug=aug)
 
     # model building
     echo('model building...')
